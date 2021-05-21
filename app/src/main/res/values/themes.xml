@@ -1,0 +1,25 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.BucketListTravel" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/secondary_1</item>
+        <item name="colorPrimaryVariant">@color/secondary_2</item>
+        <item name="colorOnPrimary">@color/secondary_4</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/secondary_5</item>
+        <item name="colorSecondaryVariant">@color/secondary_4</item>
+        <item name="colorOnSecondary">@color/purple_200</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="CustomNoActionBarTheme" parent="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@color/secondary_1</item>
+    </style>
+
+    <style name="CustomToolbarStyle">
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="colorControlNormal">@color/white</item>
+    </style>
+</resources>

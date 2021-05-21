@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Bucket List Travel</string>
+    <string name="edit_text_hint_title">Title</string>
+    <string name="edit_text_hint_description">Description</string>
+    <string name="edit_text_hint_date">Date</string>
+    <string name="edit_text_hint_location">Location</string>
+    <string name="text_add_image">ADD IMAGE</string>
+    <string name="btn_text_save">SAVE</string>
+    <string name="add_image_dialog_title">Select Action</string>
+    <string name="add_image_dialog_option_1">Select photo from Gallery</string>
+    <string name="add_image_dialog_option_2">Capture photo from Camera</string>
+    <string name="add_image_dialog_no_permission">It looks like you have turned off permission required for this feature. It can be enabled under the Applications Settings</string>
+    <string name="add_image_dialog_positive_btn">GO TO SETTINGS</string>
+    <string name="add_image_dialog_negative_btn">CANCEL</string>
+</resources>
