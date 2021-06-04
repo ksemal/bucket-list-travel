@@ -5,6 +5,8 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -13,6 +15,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,7 +26,10 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import kotlinx.android.synthetic.main.activity_add_place.*
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -153,6 +159,21 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
         et_date.setText(sdf.format(cal.time).toString())
     }
 
+    private fun saveImageToInternalStorage(bitmap: Bitmap?): Uri {
+        val wrapper = ContextWrapper(applicationContext)
+        var file = wrapper.getDir(IMAGE_DIRECTORY, Context.MODE_PRIVATE)
+        file = File(file, "${UUID.randomUUID()}.jpg")
+        try {
+            val stream: OutputStream = FileOutputStream(file)
+            bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            stream.flush()
+            stream.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return Uri.parse(file.absolutePath)
+    }
+
     private val galleryActivity =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             when (result.resultCode) {
@@ -167,6 +188,9 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
                                             contentResolver,
                                             it
                                         )
+                                    val saveImageToInternalStorage =
+                                        saveImageToInternalStorage(selectedImageBitmap)
+                                    Log.e("Saved image", "Path: $saveImageToInternalStorage")
                                     iv_place_image.setImageBitmap(
                                         selectedImageBitmap
                                     )
@@ -177,6 +201,9 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
                                     )
                                     val selectedImageBitmap =
                                         ImageDecoder.decodeBitmap(source)
+                                    val saveImageToInternalStorage =
+                                        saveImageToInternalStorage(selectedImageBitmap)
+                                    Log.e("Saved image", "Path: $saveImageToInternalStorage")
                                     iv_place_image.setImageBitmap(
                                         selectedImageBitmap
                                     )
@@ -202,10 +229,16 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
             when (result.resultCode) {
                 Activity.RESULT_OK -> {
                     val thumbnail = result.data?.extras?.get("data") as? Bitmap
+                    val saveImageToInternalStorage = saveImageToInternalStorage(thumbnail)
+                    Log.e("Saved image", "Path: $saveImageToInternalStorage")
                     iv_place_image.setImageBitmap(thumbnail)
                 }
                 Activity.RESULT_CANCELED -> {
                 }
             }
         }
+
+    companion object {
+        private const val IMAGE_DIRECTORY = "HappyPlacesImages"
+    }
 }
