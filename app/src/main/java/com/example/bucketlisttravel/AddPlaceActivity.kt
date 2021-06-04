@@ -1,15 +1,20 @@
 package com.example.bucketlisttravel
 
 import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.provider.Settings
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -17,11 +22,57 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import kotlinx.android.synthetic.main.activity_add_place.*
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
 class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
     private var cal = Calendar.getInstance()
+    private val galleryIntent =
+        Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+    private val galleryActivity =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            when (result.resultCode) {
+                Activity.RESULT_OK -> {
+                    if (result.data != null) {
+                        val contentURI = result.data?.data
+                        try {
+                            contentURI?.let {
+                                if (Build.VERSION.SDK_INT < 28) {
+                                    val selectedImageBitmap =
+                                        MediaStore.Images.Media.getBitmap(
+                                            contentResolver,
+                                            it
+                                        )
+                                    iv_place_image.setImageBitmap(
+                                        selectedImageBitmap
+                                    )
+                                } else {
+                                    val source = ImageDecoder.createSource(
+                                        contentResolver,
+                                        it
+                                    )
+                                    val selectedImageBitmap =
+                                        ImageDecoder.decodeBitmap(source)
+                                    iv_place_image.setImageBitmap(
+                                        selectedImageBitmap
+                                    )
+                                }
+                            }
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                            Toast.makeText(
+                                this@AddPlaceActivity,
+                                "Failed to load the Image from Gallery",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+                Activity.RESULT_CANCELED -> {
+                }
+            }
+        }
     private lateinit var dateListener: DatePickerDialog.OnDateSetListener
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,11 +136,7 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
             object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
                     if (p0 != null && p0.areAllPermissionsGranted()) {
-                        Toast.makeText(
-                            this@AddPlaceActivity,
-                            "Permissions are granted",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        galleryActivity.launch(galleryIntent)
                     }
                 }
 
