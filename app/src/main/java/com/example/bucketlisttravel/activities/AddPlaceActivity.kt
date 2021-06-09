@@ -1,4 +1,4 @@
-package com.example.bucketlisttravel
+package com.example.bucketlisttravel.activities
 
 import android.Manifest
 import android.app.Activity
@@ -20,6 +20,9 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.example.bucketlisttravel.R
+import com.example.bucketlisttravel.models.DatabaseHandler
+import com.example.bucketlisttravel.models.PlaceModel
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -36,6 +39,9 @@ import java.util.*
 class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
     private var cal = Calendar.getInstance()
     private lateinit var dateListener: DatePickerDialog.OnDateSetListener
+    private var saveImageToInternalStorage: Uri? = null
+    private var mLatitude: Double = 0.0
+    private var mLongitude: Double = 0.0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_place)
@@ -50,8 +56,10 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
             cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             updateDateInVIew()
         }
+        updateDateInVIew()
         et_date.setOnClickListener(this)
         tv_add_image.setOnClickListener(this)
+        btn_save.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -82,6 +90,55 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
                     show()
                 }
             }
+            R.id.btn_save -> {
+                when {
+                    et_title.text.isNullOrEmpty() -> Toast.makeText(
+                        this,
+                        "Please enter a title",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    et_description.text.isNullOrEmpty() -> Toast.makeText(
+                        this,
+                        "Please enter a description",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    et_location.text.isNullOrEmpty() -> Toast.makeText(
+                        this,
+                        "Please enter a location",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    saveImageToInternalStorage == null -> Toast.makeText(
+                        this,
+                        "Please select an image",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    else -> {
+                        val placeModel = PlaceModel(
+                            0,
+                            et_title.text.toString(),
+                            saveImageToInternalStorage.toString(),
+                            et_description.text.toString(),
+                            et_date.text.toString(),
+                            et_location.text.toString(),
+                            mLatitude,
+                            mLongitude
+                        )
+                        val dataBaseHandler = DatabaseHandler(this)
+                        val addPlaceResult = dataBaseHandler.addPlace(placeModel)
+                        addPlaceResult?.let {
+                            if (it > 0) {
+                                Toast.makeText(
+                                    this,
+                                    "Place details are saved successfully",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                finish()
+                            }
+                        }
+                    }
+                }
+            }
+
         }
     }
 
@@ -154,7 +211,7 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun updateDateInVIew() {
-        val myFormat = "dd.MM.yyyy"
+        val myFormat = "MM.dd.yyyy"
         val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
         et_date.setText(sdf.format(cal.time).toString())
     }
@@ -188,7 +245,7 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
                                             contentResolver,
                                             it
                                         )
-                                    val saveImageToInternalStorage =
+                                    saveImageToInternalStorage =
                                         saveImageToInternalStorage(selectedImageBitmap)
                                     Log.e("Saved image", "Path: $saveImageToInternalStorage")
                                     iv_place_image.setImageBitmap(
@@ -201,7 +258,7 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
                                     )
                                     val selectedImageBitmap =
                                         ImageDecoder.decodeBitmap(source)
-                                    val saveImageToInternalStorage =
+                                    saveImageToInternalStorage =
                                         saveImageToInternalStorage(selectedImageBitmap)
                                     Log.e("Saved image", "Path: $saveImageToInternalStorage")
                                     iv_place_image.setImageBitmap(
@@ -229,7 +286,7 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
             when (result.resultCode) {
                 Activity.RESULT_OK -> {
                     val thumbnail = result.data?.extras?.get("data") as? Bitmap
-                    val saveImageToInternalStorage = saveImageToInternalStorage(thumbnail)
+                    saveImageToInternalStorage = saveImageToInternalStorage(thumbnail)
                     Log.e("Saved image", "Path: $saveImageToInternalStorage")
                     iv_place_image.setImageBitmap(thumbnail)
                 }
@@ -239,6 +296,6 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
         }
 
     companion object {
-        private const val IMAGE_DIRECTORY = "HappyPlacesImages"
+        private const val IMAGE_DIRECTORY = "BucketListPlacesImages"
     }
 }

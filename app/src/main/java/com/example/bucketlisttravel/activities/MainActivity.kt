@@ -1,8 +1,9 @@
-package com.example.bucketlisttravel
+package com.example.bucketlisttravel.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.bucketlisttravel.R
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {

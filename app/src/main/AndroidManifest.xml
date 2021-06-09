@@ -14,11 +14,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BucketListTravel">
         <activity
-            android:name=".AddPlaceActivity"
+            android:name=".activities.AddPlaceActivity"
             android:label="ADD PLACE"
             android:screenOrientation="portrait"
             android:theme="@style/CustomNoActionBarTheme" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
