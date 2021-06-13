@@ -12,4 +12,7 @@
     <string name="add_image_dialog_no_permission">It looks like you have turned off permission required for this feature. It can be enabled under the Applications Settings</string>
     <string name="add_image_dialog_positive_btn">GO TO SETTINGS</string>
     <string name="add_image_dialog_negative_btn">CANCEL</string>
+    <string name="add_new_place">Add new place</string>
+    <string name="no_places">No places found yet. Kindly add one.</string>
+    <string name="image">image</string>
 </resources>

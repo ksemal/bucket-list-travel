@@ -5,6 +5,8 @@
     <dimen name="dimens_medium">16dp</dimen>
     <dimen name="dimens_large">24dp</dimen>
     <dimen name="dimens_x_large">32dp</dimen>
+    <dimen name="circle_size">70dp</dimen>
     <dimen name="image_size">200dp</dimen>
     <dimen name="stroke_size">0.5dp</dimen>
+    <dimen name="text_md">16sp</dimen>
 </resources>
