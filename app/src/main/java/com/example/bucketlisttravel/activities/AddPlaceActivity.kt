@@ -132,6 +132,7 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
                                     "Place details are saved successfully",
                                     Toast.LENGTH_SHORT
                                 ).show()
+                                setResult(Activity.RESULT_OK)
                                 finish()
                             }
                         }

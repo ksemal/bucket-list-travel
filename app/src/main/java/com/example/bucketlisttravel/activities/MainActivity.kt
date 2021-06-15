@@ -1,8 +1,10 @@
 package com.example.bucketlisttravel.activities
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.bucketlisttravel.R
@@ -18,7 +20,7 @@ class MainActivity : AppCompatActivity() {
 
         fabAddPlace.setOnClickListener {
             val intent = Intent(this, AddPlaceActivity::class.java)
-            startActivity(intent)
+            addPlaceActivity.launch(intent)
         }
         getPlacesListFromLocalDB()
     }
@@ -39,8 +41,18 @@ class MainActivity : AppCompatActivity() {
             tv_no_records_available.visibility = View.GONE
             setPlacesRecyclerView(getPlaceList)
         } else {
-            rv_places_list.visibility = View.VISIBLE
-            tv_no_records_available.visibility = View.GONE
+            rv_places_list.visibility = View.GONE
+            tv_no_records_available.visibility = View.VISIBLE
         }
     }
+
+    private val addPlaceActivity =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            when (result.resultCode) {
+                Activity.RESULT_OK -> {
+                    getPlacesListFromLocalDB()
+                }
+            }
+        }
+
 }
