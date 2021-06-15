@@ -15,6 +15,9 @@ class PlaceAdapter(
     private var list: ArrayList<PlaceModel>
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private var clickListener: OnClickListener? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return PlaceViewHolder(
             LayoutInflater.from(context).inflate(
@@ -29,14 +32,25 @@ class PlaceAdapter(
         return list.size
     }
 
+    fun setOnClickListener(clickListener: OnClickListener) {
+        this.clickListener = clickListener
+    }
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val model = list[position]
         if (holder is PlaceViewHolder) {
             holder.itemView.iv_place_image.setImageURI(Uri.parse(model.image))
             holder.itemView.tvTitle.text = model.title
             holder.itemView.tvDescription.text = model.description
+            holder.itemView.setOnClickListener {
+                clickListener?.onItemClick(position, model)
+            }
         }
     }
 
     private class PlaceViewHolder(view: View) : RecyclerView.ViewHolder(view)
+
+    interface OnClickListener {
+        fun onItemClick(position: Int, model: PlaceModel)
+    }
 }

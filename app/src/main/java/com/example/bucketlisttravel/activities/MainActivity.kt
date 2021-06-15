@@ -3,6 +3,7 @@ package com.example.bucketlisttravel.activities
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -13,7 +14,12 @@ import com.example.bucketlisttravel.models.DatabaseHandler
 import com.example.bucketlisttravel.models.PlaceModel
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), PlaceAdapter.OnClickListener {
+    override fun onItemClick(position: Int, model: PlaceModel) {
+        val intent = Intent(this, PlaceDetailActivity::class.java)
+        startActivity(intent)
+
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -28,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     private fun setPlacesRecyclerView(list: ArrayList<PlaceModel>) {
         rv_places_list.run {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = PlaceAdapter(context, list)
+            adapter = PlaceAdapter(context, list).also { it.setOnClickListener(this@MainActivity) }
             setHasFixedSize(true)
         }
     }
@@ -51,6 +57,9 @@ class MainActivity : AppCompatActivity() {
             when (result.resultCode) {
                 Activity.RESULT_OK -> {
                     getPlacesListFromLocalDB()
+                }
+                Activity.RESULT_CANCELED -> {
+                    Log.e("Activity", "Canceled or Back pressed")
                 }
             }
         }
