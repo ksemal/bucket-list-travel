@@ -17,8 +17,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity(), PlaceAdapter.OnClickListener {
     override fun onItemClick(position: Int, model: PlaceModel) {
         val intent = Intent(this, PlaceDetailActivity::class.java)
+        intent.putExtra(EXTRA_PLACE_DETAILS, model)
         startActivity(intent)
-
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,5 +63,9 @@ class MainActivity : AppCompatActivity(), PlaceAdapter.OnClickListener {
                 }
             }
         }
+
+    companion object {
+        const val EXTRA_PLACE_DETAILS = "extra_place_details"
+    }
 
 }
