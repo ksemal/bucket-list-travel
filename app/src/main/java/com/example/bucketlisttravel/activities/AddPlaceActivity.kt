@@ -21,7 +21,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.bucketlisttravel.R
-import com.example.bucketlisttravel.models.DatabaseHandler
+import com.example.bucketlisttravel.database.DatabaseHandler
 import com.example.bucketlisttravel.models.PlaceModel
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -137,7 +137,7 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
                     ).show()
                     else -> {
                         val placeModel = PlaceModel(
-                            0,
+                            if (mPlaceDetails == null) 0 else (mPlaceDetails as PlaceModel).id,
                             et_title.text.toString(),
                             saveImageToInternalStorage.toString(),
                             et_description.text.toString(),
@@ -146,9 +146,18 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
                             mLatitude,
                             mLongitude
                         )
-                        val dataBaseHandler = DatabaseHandler(this)
-                        val addPlaceResult = dataBaseHandler.addPlace(placeModel)
-                        addPlaceResult?.let {
+                        val dataBaseHandler =
+                            DatabaseHandler(
+                                this
+                            )
+                        val placeDetailResult: Int? =
+                            if (mPlaceDetails == null) {
+                                dataBaseHandler.addPlace(placeModel)
+                                    ?.toInt()
+                            } else {
+                                dataBaseHandler.updatePlace(placeModel)
+                            }
+                        placeDetailResult?.let {
                             if (it > 0) {
                                 Toast.makeText(
                                     this,

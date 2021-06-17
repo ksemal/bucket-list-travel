@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bucketlisttravel.R
 import com.example.bucketlisttravel.adapters.PlaceAdapter
-import com.example.bucketlisttravel.models.DatabaseHandler
+import com.example.bucketlisttravel.database.DatabaseHandler
 import com.example.bucketlisttravel.models.PlaceModel
 import com.example.bucketlisttravel.utils.SwipeToEditCallback
 import kotlinx.android.synthetic.main.activity_main.*
@@ -57,7 +57,8 @@ class MainActivity : AppCompatActivity(), PlaceAdapter.OnClickListener {
     }
 
     private fun getPlacesListFromLocalDB() {
-        val dbHandler = DatabaseHandler(this)
+        val dbHandler =
+            DatabaseHandler(this)
         val getPlaceList: ArrayList<PlaceModel> = dbHandler.getPlacesList()
         if (getPlaceList.size > 0) {
             rv_places_list.visibility = View.VISIBLE

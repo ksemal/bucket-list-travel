@@ -1,4 +1,4 @@
-package com.example.bucketlisttravel.models
+package com.example.bucketlisttravel.database
 
 import android.content.ContentValues
 import android.content.Context
@@ -6,10 +6,14 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.bucketlisttravel.models.PlaceModel
 
 class DatabaseHandler(
     context: Context?
-) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+) : SQLiteOpenHelper(context,
+    DATABASE_NAME, null,
+    DATABASE_VERSION
+) {
 
     companion object {
         private const val DATABASE_VERSION = 1
@@ -59,6 +63,27 @@ class DatabaseHandler(
         val result = db?.insert(TABLE_TRAVEL_PLACE, null, contentValues)
         db?.close()
         return result
+    }
+
+    fun updatePlace(place: PlaceModel): Int? {
+        val db = this.writableDatabase
+        val contentValues = ContentValues().apply {
+            put(KEY_TITLE, place.title)
+            put(KEY_IMAGE, place.image)
+            put(KEY_DESCRIPTION, place.description)
+            put(KEY_DATE, place.date)
+            put(KEY_LOCATION, place.location)
+            put(KEY_LATITUDE, place.latitude)
+            put(KEY_LONGITUDE, place.longitude)
+        }
+        val success = db?.update(
+            TABLE_TRAVEL_PLACE,
+            contentValues,
+            KEY_ID + "=" + place.id,
+            null
+        )
+        db?.close()
+        return success
     }
 
     fun getPlacesList(): ArrayList<PlaceModel> {
