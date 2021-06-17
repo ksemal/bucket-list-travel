@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity(), PlaceAdapter.OnClickListener {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             when (result.resultCode) {
                 Activity.RESULT_OK -> {
-
+                    getPlacesListFromLocalDB()
                 }
                 Activity.RESULT_CANCELED -> {
                     Log.e("Activity", "Canceled or Back pressed")
