@@ -42,6 +42,9 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
     private var saveImageToInternalStorage: Uri? = null
     private var mLatitude: Double = 0.0
     private var mLongitude: Double = 0.0
+
+    private var mPlaceDetails: PlaceModel? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_place)
@@ -50,6 +53,11 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
         toolbar_add_place.setNavigationOnClickListener {
             this.onBackPressed()
         }
+
+        if (intent.hasExtra(MainActivity.EXTRA_PLACE_DETAILS)) {
+            mPlaceDetails = intent.getParcelableExtra(MainActivity.EXTRA_PLACE_DETAILS)
+        }
+
         dateListener = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
             cal.set(Calendar.YEAR, year)
             cal.set(Calendar.MONTH, month)
@@ -57,6 +65,21 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
             updateDateInVIew()
         }
         updateDateInVIew()
+
+        mPlaceDetails?.let {
+            supportActionBar?.title = resources.getString(R.string.edit_place_title)
+            et_title.setText(it.title)
+            et_description.setText(it.description)
+            et_date.setText(it.date)
+            et_location.setText(it.location)
+            mLatitude = it.latitude
+            mLongitude = it.longitude
+
+            saveImageToInternalStorage = Uri.parse(it.image)
+            iv_place_image.setImageURI(saveImageToInternalStorage)
+            btn_save.text = resources.getString(R.string.update_button)
+        }
+
         et_date.setOnClickListener(this)
         tv_add_image.setOnClickListener(this)
         btn_save.setOnClickListener(this)

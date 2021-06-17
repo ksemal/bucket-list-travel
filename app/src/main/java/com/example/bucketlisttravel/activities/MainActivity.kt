@@ -5,13 +5,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.bucketlisttravel.R
 import com.example.bucketlisttravel.adapters.PlaceAdapter
 import com.example.bucketlisttravel.models.DatabaseHandler
 import com.example.bucketlisttravel.models.PlaceModel
+import com.example.bucketlisttravel.utils.SwipeToEditCallback
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), PlaceAdapter.OnClickListener {
@@ -20,6 +24,7 @@ class MainActivity : AppCompatActivity(), PlaceAdapter.OnClickListener {
         intent.putExtra(EXTRA_PLACE_DETAILS, model)
         startActivity(intent)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -37,6 +42,18 @@ class MainActivity : AppCompatActivity(), PlaceAdapter.OnClickListener {
             adapter = PlaceAdapter(context, list).also { it.setOnClickListener(this@MainActivity) }
             setHasFixedSize(true)
         }
+
+        val editSwipeHandler = object : SwipeToEditCallback(this) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                (rv_places_list.adapter as PlaceAdapter).notifyEditItem(
+                    editPlaceActivity,
+                    viewHolder.adapterPosition
+                )
+            }
+        }
+
+        val editItemTouchHelper = ItemTouchHelper(editSwipeHandler)
+        editItemTouchHelper.attachToRecyclerView(rv_places_list)
     }
 
     private fun getPlacesListFromLocalDB() {
@@ -57,6 +74,18 @@ class MainActivity : AppCompatActivity(), PlaceAdapter.OnClickListener {
             when (result.resultCode) {
                 Activity.RESULT_OK -> {
                     getPlacesListFromLocalDB()
+                }
+                Activity.RESULT_CANCELED -> {
+                    Log.e("Activity", "Canceled or Back pressed")
+                }
+            }
+        }
+
+    private val editPlaceActivity: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            when (result.resultCode) {
+                Activity.RESULT_OK -> {
+
                 }
                 Activity.RESULT_CANCELED -> {
                     Log.e("Activity", "Canceled or Back pressed")

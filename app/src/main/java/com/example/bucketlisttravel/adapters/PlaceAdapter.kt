@@ -1,12 +1,16 @@
 package com.example.bucketlisttravel.adapters
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bucketlisttravel.R
+import com.example.bucketlisttravel.activities.AddPlaceActivity
+import com.example.bucketlisttravel.activities.MainActivity
 import com.example.bucketlisttravel.models.PlaceModel
 import kotlinx.android.synthetic.main.item_place.view.*
 
@@ -34,6 +38,13 @@ class PlaceAdapter(
 
     fun setOnClickListener(clickListener: OnClickListener) {
         this.clickListener = clickListener
+    }
+
+    fun notifyEditItem(activityResultLauncher: ActivityResultLauncher<Intent>, position: Int) {
+        val intent = Intent(context, AddPlaceActivity::class.java)
+        intent.putExtra(MainActivity.EXTRA_PLACE_DETAILS, list[position])
+        activityResultLauncher.launch(intent)
+        notifyItemChanged(position)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

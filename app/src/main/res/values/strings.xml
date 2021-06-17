@@ -15,4 +15,6 @@
     <string name="add_new_place">Add new place</string>
     <string name="no_places">No places found yet. Kindly add one.</string>
     <string name="image">image</string>
+    <string name="edit_place_title">Edit Place</string>
+    <string name="update_button">UPDATE</string>
 </resources>
