@@ -3,19 +3,21 @@ package com.example.bucketlisttravel.utils
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
+import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bucketlisttravel.R
 
-abstract class SwipeToEditCallback(context: Context) :
-    ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+abstract class SwipeToEditCallback(private val context: Context, private val directions: Int) :
+    ItemTouchHelper.SimpleCallback(0, directions) {
 
-    private val editIcon = ContextCompat.getDrawable(context, R.drawable.ic_edit_white_24dp)
+    private val editIcon = getDrawable(directions)
     private val intrinsicWidth: Int = (editIcon?.intrinsicWidth) ?: 0
     private val intrinsicHeight: Int = (editIcon?.intrinsicHeight) ?: 0
     private val background = ColorDrawable()
-    private val backgroundColor = Color.parseColor("#FFBB86FC")
+    private val backgroundColor = getBackgroundColor(directions)
     private val clearPaint = Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
 
 
@@ -58,9 +60,9 @@ abstract class SwipeToEditCallback(context: Context) :
         if (isCanceled) {
             clearCanvas(
                 c,
-                itemView.left + dX,
+                getSide(directions, itemView) + dX,
                 itemView.top.toFloat(),
-                itemView.left.toFloat(),
+                getSide(directions, itemView).toFloat(),
                 itemView.bottom.toFloat()
             )
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
@@ -70,9 +72,9 @@ abstract class SwipeToEditCallback(context: Context) :
         // Draw the green edit background
         background.color = backgroundColor
         background.setBounds(
-            itemView.left + dX.toInt(),
+            getSide(directions, itemView) + dX.toInt(),
             itemView.top,
-            itemView.left,
+            getSide(directions, itemView),
             itemView.bottom
         )
         background.draw(c)
@@ -80,8 +82,11 @@ abstract class SwipeToEditCallback(context: Context) :
         // Calculate position of edit icon
         val editIconTop = itemView.top + (itemHeight - intrinsicHeight) / 2
         val editIconMargin = (itemHeight - intrinsicHeight) / 2
-        val editIconLeft = itemView.left + editIconMargin - intrinsicWidth
-        val editIconRight = itemView.left + editIconMargin
+        val editIconLeft = getSide(
+            directions,
+            itemView
+        ) + (editIconMargin - intrinsicWidth * getModulo(directions)) * getModulo(directions)
+        val editIconRight = getSide(directions, itemView) + (editIconMargin) * getModulo(directions)
         val editIconBottom = editIconTop + intrinsicHeight
 
         // Draw the edit icon
@@ -94,4 +99,41 @@ abstract class SwipeToEditCallback(context: Context) :
     private fun clearCanvas(c: Canvas?, left: Float, top: Float, right: Float, bottom: Float) {
         c?.drawRect(left, top, right, bottom, clearPaint)
     }
+
+    private fun getDrawable(direction: Int): Drawable? {
+        return when (direction) {
+            ItemTouchHelper.RIGHT -> ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_edit_white_24dp
+            )
+            ItemTouchHelper.LEFT -> ContextCompat.getDrawable(context, android.R.drawable.ic_delete)
+                .also { it?.setTint(context.getColor(R.color.white)) }
+            else -> null
+        }
+    }
+
+    private fun getBackgroundColor(direction: Int): Int {
+        return when (direction) {
+            ItemTouchHelper.RIGHT -> Color.parseColor("#8570A1")
+            ItemTouchHelper.LEFT -> Color.parseColor("#A5064C")
+            else -> 0
+        }
+    }
+
+    private fun getSide(direction: Int, itemView: View): Int {
+        return when (direction) {
+            ItemTouchHelper.RIGHT -> itemView.left
+            ItemTouchHelper.LEFT -> itemView.right
+            else -> 0
+        }
+    }
+
+    private fun getModulo(direction: Int): Int {
+        return when (direction) {
+            ItemTouchHelper.RIGHT -> 1
+            ItemTouchHelper.LEFT -> -1
+            else -> 1
+        }
+    }
+
 }

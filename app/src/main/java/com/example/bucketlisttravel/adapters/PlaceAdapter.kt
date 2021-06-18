@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.bucketlisttravel.R
 import com.example.bucketlisttravel.activities.AddPlaceActivity
 import com.example.bucketlisttravel.activities.MainActivity
+import com.example.bucketlisttravel.database.DatabaseHandler
 import com.example.bucketlisttravel.models.PlaceModel
 import kotlinx.android.synthetic.main.item_place.view.*
 
@@ -38,6 +39,17 @@ class PlaceAdapter(
 
     fun setOnClickListener(clickListener: OnClickListener) {
         this.clickListener = clickListener
+    }
+
+    fun removeAt(position: Int) {
+        val dbHandler = DatabaseHandler(context)
+        val deleted = dbHandler.deletePlace(list[position])
+        deleted?.let {
+            if (it > 0) {
+                list.removeAt(position)
+                notifyItemRemoved(position)
+            }
+        }
     }
 
     fun notifyEditItem(activityResultLauncher: ActivityResultLauncher<Intent>, position: Int) {

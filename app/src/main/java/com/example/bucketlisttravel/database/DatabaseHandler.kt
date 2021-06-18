@@ -86,10 +86,20 @@ class DatabaseHandler(
         return success
     }
 
+    fun deletePlace(place: PlaceModel): Int? {
+        val db = this.writableDatabase
+        val success = db?.delete(
+            TABLE_TRAVEL_PLACE,
+            "$KEY_ID=${place.id}",
+            null
+        )
+        db?.close()
+        return success
+    }
+
     fun getPlacesList(): ArrayList<PlaceModel> {
         val list = ArrayList<PlaceModel>()
-
-        var selectQuery = "SELEcT * FROM $TABLE_TRAVEL_PLACE"
+        val selectQuery = "SELECT * FROM $TABLE_TRAVEL_PLACE"
         val db = this.readableDatabase
         try {
             val cursor: Cursor = db.rawQuery(selectQuery, null)

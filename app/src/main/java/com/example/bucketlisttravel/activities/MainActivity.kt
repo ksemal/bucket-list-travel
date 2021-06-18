@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity(), PlaceAdapter.OnClickListener {
             setHasFixedSize(true)
         }
 
-        val editSwipeHandler = object : SwipeToEditCallback(this) {
+        val editSwipeHandler = object : SwipeToEditCallback(this, ItemTouchHelper.RIGHT) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 (rv_places_list.adapter as PlaceAdapter).notifyEditItem(
                     editPlaceActivity,
@@ -52,13 +52,18 @@ class MainActivity : AppCompatActivity(), PlaceAdapter.OnClickListener {
             }
         }
 
-        val editItemTouchHelper = ItemTouchHelper(editSwipeHandler)
-        editItemTouchHelper.attachToRecyclerView(rv_places_list)
+        val deleteSwipeHandler = object : SwipeToEditCallback(this, ItemTouchHelper.LEFT) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                (rv_places_list.adapter as PlaceAdapter).removeAt(viewHolder.adapterPosition)
+                getPlacesListFromLocalDB()
+            }
+        }
+        ItemTouchHelper(editSwipeHandler).attachToRecyclerView(rv_places_list)
+        ItemTouchHelper(deleteSwipeHandler).attachToRecyclerView(rv_places_list)
     }
 
     private fun getPlacesListFromLocalDB() {
-        val dbHandler =
-            DatabaseHandler(this)
+        val dbHandler = DatabaseHandler(this)
         val getPlaceList: ArrayList<PlaceModel> = dbHandler.getPlacesList()
         if (getPlaceList.size > 0) {
             rv_places_list.visibility = View.VISIBLE
