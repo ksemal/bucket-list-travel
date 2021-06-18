@@ -15,7 +15,7 @@ import com.example.bucketlisttravel.R
 import com.example.bucketlisttravel.adapters.PlaceAdapter
 import com.example.bucketlisttravel.database.DatabaseHandler
 import com.example.bucketlisttravel.models.PlaceModel
-import com.example.bucketlisttravel.utils.SwipeToEditCallback
+import com.example.bucketlisttravel.utils.SwipeCallback
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), PlaceAdapter.OnClickListener {
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity(), PlaceAdapter.OnClickListener {
             setHasFixedSize(true)
         }
 
-        val editSwipeHandler = object : SwipeToEditCallback(this, ItemTouchHelper.RIGHT) {
+        val editSwipeHandler = object : SwipeCallback(this, ItemTouchHelper.RIGHT) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 (rv_places_list.adapter as PlaceAdapter).notifyEditItem(
                     editPlaceActivity,
@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity(), PlaceAdapter.OnClickListener {
             }
         }
 
-        val deleteSwipeHandler = object : SwipeToEditCallback(this, ItemTouchHelper.LEFT) {
+        val deleteSwipeHandler = object : SwipeCallback(this, ItemTouchHelper.LEFT) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 (rv_places_list.adapter as PlaceAdapter).removeAt(viewHolder.adapterPosition)
                 getPlacesListFromLocalDB()

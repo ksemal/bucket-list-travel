@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bucketlisttravel.R
 
-abstract class SwipeToEditCallback(private val context: Context, private val directions: Int) :
+abstract class SwipeCallback(private val context: Context, private val directions: Int) :
     ItemTouchHelper.SimpleCallback(0, directions) {
 
     private val editIcon = getDrawable(directions)

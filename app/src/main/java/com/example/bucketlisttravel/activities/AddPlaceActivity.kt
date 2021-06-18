@@ -23,6 +23,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.bucketlisttravel.R
 import com.example.bucketlisttravel.database.DatabaseHandler
 import com.example.bucketlisttravel.models.PlaceModel
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -54,6 +58,10 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
             this.onBackPressed()
         }
 
+        if (!Places.isInitialized()) {
+            Places.initialize(this, resources.getString(R.string.google_maps_key))
+        }
+
         if (intent.hasExtra(MainActivity.EXTRA_PLACE_DETAILS)) {
             mPlaceDetails = intent.getParcelableExtra(MainActivity.EXTRA_PLACE_DETAILS)
         }
@@ -83,6 +91,7 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
         et_date.setOnClickListener(this)
         tv_add_image.setOnClickListener(this)
         btn_save.setOnClickListener(this)
+        et_location.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -171,7 +180,22 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
                     }
                 }
             }
-
+            R.id.et_location -> {
+                try {
+                    val fields = listOf(
+                        Place.Field.ID,
+                        Place.Field.NAME,
+                        Place.Field.LAT_LNG,
+                        Place.Field.ADDRESS
+                    )
+                    val intent =
+                        Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
+                            .build(this)
+                    mapActivity.launch(intent)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
         }
     }
 
@@ -322,6 +346,22 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
                     saveImageToInternalStorage = saveImageToInternalStorage(thumbnail)
                     Log.e("Saved image", "Path: $saveImageToInternalStorage")
                     iv_place_image.setImageBitmap(thumbnail)
+                }
+                Activity.RESULT_CANCELED -> {
+                }
+            }
+        }
+
+    private val mapActivity =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            when (result.resultCode) {
+                Activity.RESULT_OK -> {
+                    result.data?.let {
+                        val place = Autocomplete.getPlaceFromIntent(it)
+                        et_location.setText(place.address)
+                        mLatitude = place.latLng?.latitude ?: 0.toDouble()
+                        mLongitude = place.latLng?.longitude ?: 0.toDouble()
+                    }
                 }
                 Activity.RESULT_CANCELED -> {
                 }
