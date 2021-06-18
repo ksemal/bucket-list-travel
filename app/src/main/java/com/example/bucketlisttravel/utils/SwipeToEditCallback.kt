@@ -69,7 +69,7 @@ abstract class SwipeToEditCallback(private val context: Context, private val dir
             return
         }
 
-        // Draw the green edit background
+        // Draw the edit/delete background
         background.color = backgroundColor
         background.setBounds(
             getSide(directions, itemView) + dX.toInt(),
@@ -79,7 +79,7 @@ abstract class SwipeToEditCallback(private val context: Context, private val dir
         )
         background.draw(c)
 
-        // Calculate position of edit icon
+        // Calculate position of edit/delete icon
         val editIconTop = itemView.top + (itemHeight - intrinsicHeight) / 2
         val editIconMargin = (itemHeight - intrinsicHeight) / 2
         val editIconLeft = getSide(
@@ -89,7 +89,7 @@ abstract class SwipeToEditCallback(private val context: Context, private val dir
         val editIconRight = getSide(directions, itemView) + (editIconMargin) * getModulo(directions)
         val editIconBottom = editIconTop + intrinsicHeight
 
-        // Draw the edit icon
+        // Draw the edit/delete icon
         editIcon?.setBounds(editIconLeft, editIconTop, editIconRight, editIconBottom)
         editIcon?.draw(c)
 
