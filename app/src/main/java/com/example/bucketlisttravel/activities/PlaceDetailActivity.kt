@@ -1,5 +1,6 @@
 package com.example.bucketlisttravel.activities
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -24,6 +25,12 @@ class PlaceDetailActivity : AppCompatActivity() {
             supportActionBar?.title = placeDetailModel.title
             toolbar_place_detail.setNavigationOnClickListener {
                 onBackPressed()
+            }
+
+            btn_view_on_map.setOnClickListener {
+                val intent = Intent(this, MapActivity::class.java)
+                intent.putExtra(MainActivity.EXTRA_PLACE_DETAILS, placeDetailModel)
+                startActivity(intent)
             }
 
             iv_place_image.setImageURI(Uri.parse(placeDetailModel.image))
