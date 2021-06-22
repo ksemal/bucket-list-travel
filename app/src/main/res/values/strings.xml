@@ -6,7 +6,8 @@
     <string name="edit_text_hint_location">Location</string>
     <string name="text_add_image">ADD IMAGE</string>
     <string name="btn_text_save">SAVE</string>
-    <string name="btn_text_view_on_map">VIEW ON MAP</string>
+    <string name="btn_view_on_map">VIEW ON MAP</string>
+    <string name="btn_select_current_location">CURRENT LOCATION</string>
     <string name="add_image_dialog_title">Select Action</string>
     <string name="add_image_dialog_option_1">Select photo from Gallery</string>
     <string name="add_image_dialog_option_2">Capture photo from Camera</string>

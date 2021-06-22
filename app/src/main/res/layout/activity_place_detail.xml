@@ -81,7 +81,7 @@
                 android:layout_marginTop="@dimen/dimens_medium"
                 android:backgroundTint="@android:color/white"
                 android:gravity="center"
-                android:text="@string/btn_text_view_on_map"
+                android:text="@string/btn_view_on_map"
                 android:textColor="@color/secondary_2"
                 android:textSize="@dimen/text_md"
                 app:cornerRadius="@dimen/dimens_x_small"
