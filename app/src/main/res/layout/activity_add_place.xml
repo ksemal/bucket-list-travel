@@ -141,6 +141,20 @@
                 app:strokeColor="@color/secondary_2"
                 app:strokeWidth="@dimen/dimens_border" />
 
+            <ProgressBar
+                android:id="@+id/current_location_loading"
+                android:layout_width="@dimen/dimens_x_large"
+                android:layout_height="@dimen/dimens_x_large"
+                android:elevation="8dp"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/secondary_6"
+                android:indeterminateTintMode="src_in"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/btn_select_current_location"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/btn_select_current_location" />
+
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_place_image"
                 android:layout_width="@dimen/image_size"

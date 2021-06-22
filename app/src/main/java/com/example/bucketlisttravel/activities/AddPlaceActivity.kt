@@ -1,6 +1,7 @@
 package com.example.bucketlisttravel.activities
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -14,6 +15,7 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Looper
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
@@ -24,6 +26,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.bucketlisttravel.R
 import com.example.bucketlisttravel.database.DatabaseHandler
 import com.example.bucketlisttravel.models.PlaceModel
+import com.example.bucketlisttravel.utils.GetAddressFromLatLng
+import com.google.android.gms.location.*
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
@@ -34,6 +38,9 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import kotlinx.android.synthetic.main.activity_add_place.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -50,6 +57,9 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
 
     private var mPlaceDetails: PlaceModel? = null
 
+    private lateinit var mFusedLocationClient: FusedLocationProviderClient
+    private val uiScope = CoroutineScope(Dispatchers.Main)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_place)
@@ -58,6 +68,8 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
         toolbar_add_place.setNavigationOnClickListener {
             this.onBackPressed()
         }
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         if (!Places.isInitialized()) {
             Places.initialize(this, resources.getString(R.string.google_maps_key))
@@ -216,11 +228,9 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
                         object : MultiplePermissionsListener {
                             override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
                                 if (p0 != null && p0.areAllPermissionsGranted()) {
-                                    Toast.makeText(
-                                        this@AddPlaceActivity,
-                                        "Location permission is granted. Now you can get the current location",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    requestNewLocationData()
+                                    btn_select_current_location.visibility = View.INVISIBLE
+                                    current_location_loading.visibility = View.VISIBLE
                                 }
                             }
 
@@ -237,12 +247,44 @@ class AddPlaceActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private suspend fun setAddress() {
+        val address = GetAddressFromLatLng(this, mLatitude, mLongitude)
+        et_location.setText(address.getAddress())
+        btn_select_current_location.visibility = View.VISIBLE
+        current_location_loading.visibility = View.GONE
+    }
+
     private fun isLocationEnabled(): Boolean {
         val locationManager: LocationManager =
             getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
             LocationManager.NETWORK_PROVIDER
         )
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun requestNewLocationData() {
+        val mLocationRequest = LocationRequest.create()
+        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        mLocationRequest.interval = 1000
+        mLocationRequest.numUpdates = 1
+
+        mFusedLocationClient.requestLocationUpdates(
+            mLocationRequest,
+            mLocationCallback,
+            Looper.myLooper()
+        )
+    }
+
+    private val mLocationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            val mLastLocation = locationResult.lastLocation
+            mLatitude = mLastLocation.latitude
+            mLongitude = mLastLocation.longitude
+            uiScope.launch {
+                setAddress()
+            }
+        }
     }
 
     private fun takePhotoFromCamera() {
