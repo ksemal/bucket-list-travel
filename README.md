@@ -23,6 +23,10 @@ Bucket list travel app alows you:
 * Custom swipe guesture class extended from ItemTouchHelper.SimpleCallback
 * Maps SDK for Android and Places API to get map view, determine and show location of a place with marker and zoom
 
+### Challenges
+
+* Coroutines implementation in order to get current location asynchronous
+
 ### Screenshots
 
 #### Create new traval place flow, edit/remove travel place
